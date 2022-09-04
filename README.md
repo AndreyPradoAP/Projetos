@@ -1,2 +1,2 @@
-# POOII
-Programas criados usando Orientação à Objetos em Java
+# Projetos
+Projetos criados durante o técnico
