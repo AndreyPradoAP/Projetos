@@ -19,51 +19,56 @@ namespace ProjetoICG_3_Bimestre
 
         private void button1_Click(object sender, EventArgs e)
         {
-            int calco = 100;
+            int calco = 140;
 
-            Bitmap imagemPanela = carregarImagem("C:\\Imagens\\Panela.jpg");
-            Bitmap imagemCozinha = carregarImagem("C:\\Imagens\\Imagem_A.jpg");
+            Bitmap imagemPanela = carregarImagem("c:\\Imagens\\Panela.jpg");
+            Bitmap imagemCozinha = carregarImagem("c:\\Imagens\\Imagem_A.jpg");
 
-            int[] tamanhoPanela = tamanhoImagem(imagemPanela);
-            int[] tamanhoCozinha = tamanhoImagem(imagemCozinha);
-
-            //MessageBox.Show("Tamanho panela = " + tamanhoPanela[0] + " por " + tamanhoPanela[1]);
-            //MessageBox.Show("Tamanho panela = " + tamanhoCozinha[0] + " por " + tamanhoCozinha[1]);
+            int[] tamanhoPanela = calcularTamanhoImagem(imagemPanela);
+            int[] tamanhoCozinha = calcularTamanhoImagem(imagemCozinha);
 
             Bitmap imagemColagem = new Bitmap(tamanhoCozinha[0], tamanhoCozinha[1]);
 
-            for (int c = 0; c < tamanhoCozinha[0]; c++)
+            for (int x = 0; x < tamanhoCozinha[0]; x++)
             {
-                for (int i = 0; i < tamanhoCozinha[1]; i++)
+                for (int y = 0; y < tamanhoCozinha[1]; y++)
                 {
-                    if (c < tamanhoPanela[0] && i < tamanhoPanela[1])
+                    if (x >= calco && x - calco < tamanhoPanela[0] && y < tamanhoPanela[1])
                     {
-                        int[] RGBPanela = corPixelRGB(imagemPanela, c, i);
+                        byte[] RGBPanela = corPixelRGB(imagemPanela, x - calco, y);
 
                         if (RGBPanela[0] > 210 && RGBPanela[1] > 210 && RGBPanela[2] < 150)
                         {
-                            Color corCozinha = corPixelColor(imagemCozinha, c, i);
-                            imagemColagem = mudarCorImagem(imagemColagem, corCozinha, c, i);
+                            byte[] corCozinhaRGB = corPixelRGB(imagemCozinha, x, y);
+                            Color corCozinhaColor = corRGB(corCozinhaRGB[0], corCozinhaRGB[1], corCozinhaRGB[2]);
+
+                            imagemColagem = mudarCorImagem(imagemColagem, corCozinhaColor, x, y);
                         }
                         else
                         {
-                            Color corPanela = corPixelColor(imagemPanela, c, i);
-                            imagemColagem = mudarCorImagem(imagemColagem, corPanela, c + calco, i);
-                        }
+                            byte[] corPanelaRGB = corPixelRGB(imagemPanela, x - calco, y);
+                            Color corPanelaColor = corRGB(corPanelaRGB[0], corPanelaRGB[1], corPanelaRGB[2]);
 
-                        //MessageBox.Show("Plotar Panela: " + c + ", " + i);
+                            imagemColagem = mudarCorImagem(imagemColagem, corPanelaColor, x, y);
+                        }
                     }
                     else
                     {
-                        Color corCozinha = corPixelColor(imagemCozinha, c, i);
-                        imagemColagem = mudarCorImagem(imagemColagem, corCozinha, c, i);
+                        byte[] corCozinhaRGB = corPixelRGB(imagemCozinha, x, y);
+                        Color corCozinhaColor = corRGB(corCozinhaRGB[0], corCozinhaRGB[1], corCozinhaRGB[2]);
 
-                        //MessageBox.Show("Plotar Cozinha: " + c + ", " + i);
+                        imagemColagem = mudarCorImagem(imagemColagem, corCozinhaColor, x, y);
                     }
                 }
             }
 
-            imagemColagem.Save("C:\\Imagens\\imagemColagem.jpg");
+            imagemColagem.Save("c:\\Imagens\\imagemColagem.jpg");
+
+            imagemColagem = filtroMonocromatico(imagemColagem);
+            imagemColagem.Save("c:\\Imagens\\imagemColagem_Monocromatico.jpg");
+
+            imagemColagem = filtroBinario(imagemColagem);
+            imagemColagem.Save("c:\\Imagens\\imagemColagem_Binario.jpg");
         }
 
         public Bitmap carregarImagem(String caminhoImagem)
@@ -73,35 +78,23 @@ namespace ProjetoICG_3_Bimestre
             return imagem;
         }
 
-        public int[] tamanhoImagem(Bitmap imagem)
+        public int[] calcularTamanhoImagem(Bitmap imagem)
         {
             int X = imagem.Width;
             int Y = imagem.Height;
 
-            int[] medidaimagem = { X, Y };
+            int[] medidaImagem = { X, Y };
 
-            return medidaimagem;
+            return medidaImagem;
         }
 
-        public Color corPixelColor(Bitmap imagem, int X, int Y)
+        public byte[] corPixelRGB(Bitmap imagem, int X, int Y)
         {
-            int r = imagem.GetPixel(X, Y).R;
-            int g = imagem.GetPixel(X, Y).G;
-            int b = imagem.GetPixel(X, Y).B;
+            byte r = imagem.GetPixel(X, Y).R;
+            byte g = imagem.GetPixel(X, Y).G;
+            byte b = imagem.GetPixel(X, Y).B;
 
-            Color cor = new Color();
-            cor = Color.FromArgb(r, g, b);
-
-            return cor;
-        }
-
-        public int[] corPixelRGB(Bitmap imagem, int X, int Y)
-        {
-            int r = imagem.GetPixel(X, Y).R;
-            int g = imagem.GetPixel(X, Y).G;
-            int b = imagem.GetPixel(X, Y).B;
-
-            int[] RGB = { r, g, b };
+            byte[] RGB = { r, g, b };
 
             return RGB;
         }
@@ -120,9 +113,53 @@ namespace ProjetoICG_3_Bimestre
             return Imagem;
         }
 
-        public void juntarImagens()
+        public Bitmap filtroMonocromatico(Bitmap imagem)
         {
+            int[] tamanhoImagem = calcularTamanhoImagem(imagem);
 
+            for (int x = 0; x < tamanhoImagem[0]; x++)
+            {
+                for (int y = 0; y < tamanhoImagem[1]; y++)
+                {
+                    byte[] rgbPixel = corPixelRGB(imagem, x, y);
+
+                    byte tomCinza = (byte) (rgbPixel[0] * 0.3 + rgbPixel[1] * 0.59 + rgbPixel[2] * 0.11);
+
+                    Color corPixel = corRGB(tomCinza, tomCinza, tomCinza);
+
+                    mudarCorImagem(imagem, corPixel, x, y);
+                }
+            }
+
+            return imagem;
+        }
+
+        public Bitmap filtroBinario(Bitmap imagem)
+        {
+            int[] tamanhoImagem = calcularTamanhoImagem(imagem);
+
+            for (int x = 0; x < tamanhoImagem[0]; x++)
+            {
+                for (int y = 0; y < tamanhoImagem[1]; y++)
+                {
+                    byte[] rgbPixel = corPixelRGB(imagem, x, y);
+
+                    if (rgbPixel[0] >= 126)
+                    {
+                        Color corPixel = corRGB(255, 255, 255);
+
+                        mudarCorImagem(imagem, corPixel, x, y);
+                    }
+                    else
+                    {
+                        Color corPixel = corRGB(0, 0, 0);
+
+                        mudarCorImagem(imagem, corPixel, x, y);
+                    }
+                }
+            }
+
+            return imagem;
         }
     }
 }
