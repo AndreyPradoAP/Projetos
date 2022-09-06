@@ -1,3 +1,14 @@
+/* Colegio Técnico Antônio Teixeira Fernandes (Univap)
+ * Curso Técnico em Informática - Data de Entrega: 08 / 09 / 2022
+ * Autor do Projeto: Andrey Prado de Oliveira
+ * Turma: 3H
+ * Projeto de ICG do 3° Bimestre
+ * Observação: 
+ *  - A partir do 3º Bimestre, todos os meus projetos serão
+ *    realizados de forma individual.
+ *    
+ * ******************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -5,7 +16,6 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ProjetoICG_3_Bimestre
@@ -35,40 +45,40 @@ namespace ProjetoICG_3_Bimestre
                 {
                     if (x >= calco && x - calco < tamanhoPanela[0] && y < tamanhoPanela[1])
                     {
-                        byte[] RGBPanela = corPixelRGB(imagemPanela, x - calco, y);
+                        byte[] RGBPanela = corPixel(imagemPanela, x - calco, y);
 
                         if (RGBPanela[0] > 210 && RGBPanela[1] > 210 && RGBPanela[2] < 150)
                         {
-                            byte[] corCozinhaRGB = corPixelRGB(imagemCozinha, x, y);
+                            byte[] corCozinhaRGB = corPixel(imagemCozinha, x, y);
                             Color corCozinhaColor = corRGB(corCozinhaRGB[0], corCozinhaRGB[1], corCozinhaRGB[2]);
 
-                            imagemColagem = mudarCorImagem(imagemColagem, corCozinhaColor, x, y);
+                            imagemColagem = mudarCorPixel(imagemColagem, corCozinhaColor, x, y);
                         }
                         else
                         {
-                            byte[] corPanelaRGB = corPixelRGB(imagemPanela, x - calco, y);
+                            byte[] corPanelaRGB = corPixel(imagemPanela, x - calco, y);
                             Color corPanelaColor = corRGB(corPanelaRGB[0], corPanelaRGB[1], corPanelaRGB[2]);
 
-                            imagemColagem = mudarCorImagem(imagemColagem, corPanelaColor, x, y);
+                            imagemColagem = mudarCorPixel(imagemColagem, corPanelaColor, x, y);
                         }
                     }
                     else
                     {
-                        byte[] corCozinhaRGB = corPixelRGB(imagemCozinha, x, y);
+                        byte[] corCozinhaRGB = corPixel(imagemCozinha, x, y);
                         Color corCozinhaColor = corRGB(corCozinhaRGB[0], corCozinhaRGB[1], corCozinhaRGB[2]);
 
-                        imagemColagem = mudarCorImagem(imagemColagem, corCozinhaColor, x, y);
+                        imagemColagem = mudarCorPixel(imagemColagem, corCozinhaColor, x, y);
                     }
                 }
             }
 
-            imagemColagem.Save("c:\\Imagens\\imagemColagem.jpg");
+            salvarImagem(imagemColagem, "c:\\Imagens\\", "imagemColagem.jpg");
 
             imagemColagem = filtroMonocromatico(imagemColagem);
-            imagemColagem.Save("c:\\Imagens\\imagemColagem_Monocromatico.jpg");
+            salvarImagem(imagemColagem, "c:\\Imagens\\", "imagemColagem_Monocromatico.jpg");
 
             imagemColagem = filtroBinario(imagemColagem);
-            imagemColagem.Save("c:\\Imagens\\imagemColagem_Binario.jpg");
+            salvarImagem(imagemColagem, "c:\\Imagens\\", "imagemColagem_Binario.jpg");
         }
 
         public Bitmap carregarImagem(String caminhoImagem)
@@ -76,6 +86,11 @@ namespace ProjetoICG_3_Bimestre
             Bitmap imagem = new Bitmap(caminhoImagem);
 
             return imagem;
+        }
+
+        public void salvarImagem(Bitmap imagem, String caminhoImagem, String nomeImagem)
+        {
+            imagem.Save(caminhoImagem + nomeImagem);
         }
 
         public int[] calcularTamanhoImagem(Bitmap imagem)
@@ -88,7 +103,7 @@ namespace ProjetoICG_3_Bimestre
             return medidaImagem;
         }
 
-        public byte[] corPixelRGB(Bitmap imagem, int X, int Y)
+        public byte[] corPixel(Bitmap imagem, int X, int Y)
         {
             byte r = imagem.GetPixel(X, Y).R;
             byte g = imagem.GetPixel(X, Y).G;
@@ -106,7 +121,7 @@ namespace ProjetoICG_3_Bimestre
             return cor;
         }
 
-        public Bitmap mudarCorImagem(Bitmap Imagem, Color cor, int X, int Y)
+        public Bitmap mudarCorPixel(Bitmap Imagem, Color cor, int X, int Y)
         {
             Imagem.SetPixel(X, Y, cor);
 
@@ -121,13 +136,12 @@ namespace ProjetoICG_3_Bimestre
             {
                 for (int y = 0; y < tamanhoImagem[1]; y++)
                 {
-                    byte[] rgbPixel = corPixelRGB(imagem, x, y);
+                    byte[] rgbPixel = corPixel(imagem, x, y);
 
                     byte tomCinza = (byte) (rgbPixel[0] * 0.3 + rgbPixel[1] * 0.59 + rgbPixel[2] * 0.11);
 
-                    Color corPixel = corRGB(tomCinza, tomCinza, tomCinza);
-
-                    mudarCorImagem(imagem, corPixel, x, y);
+                    Color pixelMonocromatico = corRGB(tomCinza, tomCinza, tomCinza);
+                    mudarCorPixel(imagem, pixelMonocromatico, x, y);
                 }
             }
 
@@ -142,19 +156,17 @@ namespace ProjetoICG_3_Bimestre
             {
                 for (int y = 0; y < tamanhoImagem[1]; y++)
                 {
-                    byte[] rgbPixel = corPixelRGB(imagem, x, y);
+                    byte[] rgbPixel = corPixel(imagem, x, y);
 
                     if (rgbPixel[0] >= 126)
                     {
                         Color corPixel = corRGB(255, 255, 255);
-
-                        mudarCorImagem(imagem, corPixel, x, y);
+                        mudarCorPixel(imagem, corPixel, x, y);
                     }
                     else
                     {
                         Color corPixel = corRGB(0, 0, 0);
-
-                        mudarCorImagem(imagem, corPixel, x, y);
+                        mudarCorPixel(imagem, corPixel, x, y);
                     }
                 }
             }
