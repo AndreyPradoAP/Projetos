@@ -6,7 +6,7 @@ class NumeroExtenso{
         int numero = -1;
         int flag = 0;
         Scanner scan = new Scanner(System.in);
-        Unidade uni = new Unidade();
+        Numero num = new Numero();
 
         while(numero < 0 || numero > 9999){
             if(flag == 0){
@@ -20,20 +20,20 @@ class NumeroExtenso{
             }
         }
 
-        for(int c = 1000; c >= 1 ; c /= 10){
+        for(int c = 1000; c >= 1; c /= 10){
             algarismoDecimal = numero / c;
             numero -= algarismoDecimal * c;
 
             if(c == 1)
-                uni.setUnidade(algarismoDecimal);
+                num.setUnidade(algarismoDecimal);
             else if(c == 10)
-                uni.setDezena(algarismoDecimal);
+                num.setDezena(algarismoDecimal);
             else if(c == 100)
-                uni.setCentena(algarismoDecimal);
+                num.setCentena(algarismoDecimal);
             else
-                uni.setMilhar(algarismoDecimal);
+                num.setMilhar(algarismoDecimal);
         }
 
-        Caracteres caracter = new Caracteres(uni);
+        ManipulaCaracteres caracter = new ManipulaCaracteres(num);
     }
 }
