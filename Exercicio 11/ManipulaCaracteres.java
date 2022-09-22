@@ -1,9 +1,8 @@
 class ManipulaCaracteres{
-    ManipulaCaracteres(Numero num){
+    public String criarExtenso(Numero num){
         int algarismo = 0;
         int algarismoUnidade = 0;
         String extenso = "";
-
 
         Unidade[] numString = this.preencherCasasDecimais();
 
@@ -19,7 +18,10 @@ class ManipulaCaracteres{
             if(extenso != "")
                 extenso += " e ";
 
-            extenso += numString[algarismo - 1].getCentena();
+            if(algarismo == 1 && num.getDezena() == 0 && num.getUnidade() == 0)
+                extenso += "cem";
+            else
+                extenso += numString[algarismo - 1].getCentena();
         }
 
         algarismo = num.getDezena();
@@ -57,8 +59,8 @@ class ManipulaCaracteres{
         }
 
         extenso = mudarLetra(extenso);
-
-        System.out.println(extenso);
+        
+        return extenso;
     }
 
     public Unidade[] preencherCasasDecimais(){
@@ -67,12 +69,12 @@ class ManipulaCaracteres{
         for(int c = 0; c <= 8; c++){
             numString[c] = new Unidade();
         }
-
+        
         numString[0].setUnidade("um");
         numString[0].setDezena("dez");
         numString[0].setDezenaDez("onze");
-        numString[0].setCentena("cem");
-        numString[0].setMilhar("mil");
+        numString[0].setCentena("cento");
+        numString[0].setMilhar("um mil");
 
         numString[1].setUnidade("dois");
         numString[1].setDezena("vinte");
@@ -127,7 +129,7 @@ class ManipulaCaracteres{
 
     public String mudarLetra(String extenso){
         String letraInicial = extenso.substring(0, 1);
-        String restoNumero = extenso.substring(1, extenso.length());
+        String restoNumero = extenso.substring(1);
 
         letraInicial = letraInicial.toUpperCase();
 
